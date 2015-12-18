@@ -47,6 +47,11 @@
     <jenkins.version>1.609</jenkins.version>
   </properties>
 
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/amazon-ecr-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/amazon-ecr-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/amazon-ecr-plugin</url>
+  </scm>
 
   <licenses>
     <license>
