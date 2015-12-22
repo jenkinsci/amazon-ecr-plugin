@@ -1,6 +1,6 @@
 ## Amazon ECR Plugin
 
-This plugin offer integration with Amazon ECR (Docker registry) as a DockerRegistryToken source to convert
+This plugin offers integration with Amazon ECR (Docker registry) as a DockerRegistryToken source to convert
 Amazon Credentials into a Docker CLI Authentication Token.
 
 It uses ECR GetAuthorizationToken API to generate such a token
