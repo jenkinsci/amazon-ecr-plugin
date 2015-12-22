@@ -29,9 +29,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.cloudbees.jenkins.plugins</groupId>
-    <artifactId>jenkins-plugins</artifactId>
-    <version>39</version>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>1.609</version>
+    <relativePath />
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -42,10 +43,6 @@
   <name>Amazon ECR plugin</name>
   <description>Integrate Jenkins with Amazon EC2 Container Registry (ECR)</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Amazon+ECR</url>
-
-  <properties>
-    <jenkins.version>1.609</jenkins.version>
-  </properties>
 
   <developers>
     <developer>
