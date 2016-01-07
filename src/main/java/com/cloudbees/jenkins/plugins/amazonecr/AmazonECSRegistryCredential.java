@@ -26,10 +26,10 @@
 package com.cloudbees.jenkins.plugins.amazonecr;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.services.ecs.AmazonECRClient;
-import com.amazonaws.services.ecs.AmazonECSClient;
-import com.amazonaws.services.ecs.GetAuthorizationTokenRequest;
-import com.amazonaws.services.ecs.GetAuthorizationTokenResult;
+import com.amazonaws.services.ecr.AmazonECRClient;
+import com.amazonaws.services.ecr.model.AuthorizationData;
+import com.amazonaws.services.ecr.model.GetAuthorizationTokenRequest;
+import com.amazonaws.services.ecr.model.GetAuthorizationTokenResult;
 import com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentials;
 import com.cloudbees.plugins.credentials.CredentialsNameProvider;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -80,7 +80,11 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
         final AmazonECRClient client = new AmazonECRClient(credentials.getCredentials(), new ClientConfiguration());
         final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(new GetAuthorizationTokenRequest());
-        return Secret.fromString(authorizationToken.getAuthorizationToken());
+        final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
+        if (authorizationData == null || authorizationData.isEmpty()) {
+            throw new IllegalStateException("Failed to retreive authorization token for Amazon ECR");
+        }
+        return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
     }
 
     @NonNull

@@ -25,7 +25,6 @@
 
 package com.cloudbees.jenkins.plugins.amazonecr;
 
-import com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentials;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.util.Secret;
