@@ -36,8 +36,10 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.ProxyConfiguration;
 import hudson.security.ACL;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
@@ -78,13 +80,25 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         final AmazonWebServicesCredentials credentials = getCredentials();
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
 
-        final AmazonECRClient client = new AmazonECRClient(credentials.getCredentials(), new ClientConfiguration());
+        final AmazonECRClient client = new AmazonECRClient(credentials.getCredentials(), getClientConfiguration());
         final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(new GetAuthorizationTokenRequest());
         final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
         if (authorizationData == null || authorizationData.isEmpty()) {
             throw new IllegalStateException("Failed to retreive authorization token for Amazon ECR");
         }
         return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
+    }
+
+    private ClientConfiguration getClientConfiguration() {
+        ClientConfiguration config = new ClientConfiguration();
+        ProxyConfiguration proxy = Jenkins.getInstance().proxy;
+        if (proxy != null) {
+            config.setProxyHost(proxy.name);
+            config.setProxyPort(proxy.port);
+            config.setProxyUsername(proxy.getUserName());
+            config.setProxyPassword(proxy.getPassword());
+        }
+        return config;
     }
 
     @NonNull
