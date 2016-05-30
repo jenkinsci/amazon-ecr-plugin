@@ -63,9 +63,19 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     }
 
     public AmazonWebServicesCredentials getCredentials() {
-        List<AmazonWebServicesCredentials> c = CredentialsProvider.lookupCredentials(
+        List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
                 AmazonWebServicesCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.EMPTY_LIST);
-        return c.isEmpty() ? null : c.get(0);
+
+        if (credentials.isEmpty()) {
+            return null;
+        }
+
+        for (AmazonWebServicesCredentials awsCredentials : credentials) {
+            if (awsCredentials.getId().equals(this.credentialsId)) {
+                return awsCredentials;
+            }
+        }
+        return  null;
     }
 
     public String getDescription() {
