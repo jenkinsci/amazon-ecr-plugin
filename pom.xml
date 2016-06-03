@@ -30,8 +30,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.609</version>
-    <relativePath />
+    <version>2.9</version>
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -42,6 +41,12 @@
   <name>Amazon ECR plugin</name>
   <description>Integrate Jenkins with Amazon EC2 Container Registry (ECR)</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Amazon+ECR</url>
+
+  <properties>
+    <jenkins.version>1.609</jenkins.version>
+    <java.level>6</java.level>
+    <powermock.version>1.6.1</powermock.version>
+  </properties>
 
   <developers>
     <developer>
@@ -65,16 +70,28 @@
     </license>
   </licenses>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
 
