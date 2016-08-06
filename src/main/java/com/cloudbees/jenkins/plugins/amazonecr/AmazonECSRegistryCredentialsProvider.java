@@ -73,7 +73,7 @@ public class AmazonECSRegistryCredentialsProvider extends CredentialsProvider {
                 derived.add((C) new AmazonECSRegistryCredential(
                     credentials.getScope(),
                     credentials.getId(),
-                    Region.getRegion(region)));
+                    region));
             }
         }
 

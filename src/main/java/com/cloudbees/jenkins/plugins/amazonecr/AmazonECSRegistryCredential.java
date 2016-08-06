@@ -55,15 +55,15 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     private final String credentialsId;
 
-    private transient final Region region;
+    private final Regions region;
 
     public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId) {
         super(scope, "ecr:"+credentialsId, "Amazon ECR Registry");
         this.credentialsId = credentialsId;
-        region = Region.getRegion(Regions.US_EAST_1);
+        region = Regions.US_EAST_1;
     }
 
-    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId, Region region) {
+    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId, Regions region) {
         super(scope, "ecr:" + region.getName() + ":" + credentialsId, "Amazon ECR Registry");
         this.credentialsId = credentialsId;
         this.region = region;
@@ -100,7 +100,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
 
         final AmazonECRClient client = new AmazonECRClient(credentials.getCredentials(), new ClientConfiguration());
-        client.setRegion(region);
+        client.setRegion(Region.getRegion(region));
 
         final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(new GetAuthorizationTokenRequest());
         final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
