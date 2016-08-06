@@ -55,7 +55,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     private final String credentialsId;
 
-    private final Region region;
+    private transient final Region region;
 
     public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId) {
         super(scope, "ecr:"+credentialsId, "Amazon ECR Registry");
