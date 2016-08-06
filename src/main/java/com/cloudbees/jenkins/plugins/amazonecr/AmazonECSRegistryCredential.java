@@ -26,6 +26,8 @@
 package com.cloudbees.jenkins.plugins.amazonecr;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ecr.AmazonECRClient;
 import com.amazonaws.services.ecr.model.AuthorizationData;
 import com.amazonaws.services.ecr.model.GetAuthorizationTokenRequest;
@@ -53,9 +55,18 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     private final String credentialsId;
 
+    private final Region region;
+
     public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId) {
         super(scope, "ecr:"+credentialsId, "Amazon ECR Registry");
         this.credentialsId = credentialsId;
+        region = Region.getRegion(Regions.US_EAST_1);
+    }
+
+    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId, Region region) {
+        super(scope, "ecr:" + region.getName() + ":" + credentialsId, "Amazon ECR Registry");
+        this.credentialsId = credentialsId;
+        this.region = region;
     }
 
     public String getCredentialsId() {
@@ -64,7 +75,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     public AmazonWebServicesCredentials getCredentials() {
         List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
-                AmazonWebServicesCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.EMPTY_LIST);
+            AmazonWebServicesCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.EMPTY_LIST);
 
         if (credentials.isEmpty()) {
             return null;
@@ -89,6 +100,8 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
 
         final AmazonECRClient client = new AmazonECRClient(credentials.getCredentials(), new ClientConfiguration());
+        client.setRegion(region);
+
         final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(new GetAuthorizationTokenRequest());
         final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
         if (authorizationData == null || authorizationData.isEmpty()) {

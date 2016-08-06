@@ -25,6 +25,8 @@
 
 package com.cloudbees.jenkins.plugins.amazonecr;
 
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentials;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -60,12 +62,19 @@ public class AmazonECSRegistryCredentialsProvider extends CredentialsProvider {
         List<C> derived = Lists.newLinkedList();
 
         final List<AmazonWebServicesCredentials> list = lookupCredentials(AmazonWebServicesCredentials.class, itemGroup,
-                ACL.SYSTEM, Collections.EMPTY_LIST);
+            ACL.SYSTEM, Collections.EMPTY_LIST);
 
         for (AmazonWebServicesCredentials credentials : list) {
             derived.add((C) new AmazonECSRegistryCredential(
+                credentials.getScope(),
+                credentials.getId()));
+
+            for (Regions region : Regions.values()) {
+                derived.add((C) new AmazonECSRegistryCredential(
                     credentials.getScope(),
-                    credentials.getId()));
+                    credentials.getId(),
+                    Region.getRegion(region)));
+            }
         }
 
         return derived;
