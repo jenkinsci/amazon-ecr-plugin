@@ -73,7 +73,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         return credentialsId;
     }
 
-    public AmazonWebServicesCredentials getCredentials() {
+    public @CheckForNull AmazonWebServicesCredentials getCredentials() {
         List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
             AmazonWebServicesCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.EMPTY_LIST);
 
@@ -90,7 +90,8 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     }
 
     public String getDescription() {
-        return CredentialsNameProvider.name(getCredentials());
+        final AmazonWebServicesCredentials credentials = getCredentials();
+        return credentials == null ? "" : CredentialsNameProvider.name(credentials);
     }
 
     @NonNull
