@@ -40,9 +40,11 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.model.ItemGroup;
 import hudson.security.ACL;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,17 +59,22 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     private final Regions region;
 
-    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId) {
-        super(scope, "ecr:"+credentialsId, "Amazon ECR Registry");
-        this.credentialsId = credentialsId;
-        region = Regions.US_EAST_1;
+    private final ItemGroup itemGroup;
+
+    public AmazonECSRegistryCredential(CredentialsScope scope, @NonNull String credentialsId,
+                                       String description, ItemGroup itemGroup) {
+        this(scope, credentialsId, Regions.US_EAST_1, description, itemGroup);
     }
 
-    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, String credentialsId, Regions region) {
-        super(scope, "ecr:" + region.getName() + ":" + credentialsId, "Amazon ECR Registry");
+    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, @NonNull String credentialsId,
+                                       Regions region, String description, ItemGroup itemGroup) {
+        super(scope, "ecr:" + region.getName() + ":" + credentialsId, "Amazon ECR Registry : "
+                + (StringUtils.isNotBlank(description) ? description + " - " : "" ) + region);
         this.credentialsId = credentialsId;
         this.region = region;
+        this.itemGroup = itemGroup;
     }
+
 
     public String getCredentialsId() {
         return credentialsId;
@@ -75,7 +82,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     public @CheckForNull AmazonWebServicesCredentials getCredentials() {
         List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
-            AmazonWebServicesCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.EMPTY_LIST);
+            AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM, Collections.EMPTY_LIST);
 
         if (credentials.isEmpty()) {
             return null;
@@ -91,7 +98,8 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     public String getDescription() {
         final AmazonWebServicesCredentials credentials = getCredentials();
-        return credentials == null ? "" : CredentialsNameProvider.name(credentials);
+        return credentials == null ? "No Valid Credential" : CredentialsNameProvider.name(credentials)
+                + " " + (StringUtils.isNotBlank(credentials.getDescription()) ? region : super.getDescription());
     }
 
     @NonNull
