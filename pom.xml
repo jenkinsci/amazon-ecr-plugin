@@ -54,6 +54,11 @@
       <name>Nicolas De Loof</name>
       <email>nicolas.deloof@gmail.com</email>
     </developer>
+    <developer>
+      <id>ifernandezcalvo</id>
+      <name>Ivan Fernandez Calvo</name>
+      <email>kuisathaverat@gmail.com</email>
+    </developer>
   </developers>
 
   <scm>
