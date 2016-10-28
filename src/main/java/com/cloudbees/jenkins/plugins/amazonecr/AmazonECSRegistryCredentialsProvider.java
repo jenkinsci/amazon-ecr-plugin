@@ -30,17 +30,22 @@ import com.amazonaws.regions.Regions;
 import com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentials;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.Extension;
+import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.security.ACL;
 import org.acegisecurity.Authentication;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class automatically wraps existing {@link AmazonWebServicesCredentials} instances
@@ -50,6 +55,7 @@ import java.util.List;
 @Extension
 public class AmazonECSRegistryCredentialsProvider extends CredentialsProvider {
 
+    private static final Logger LOGGER = Logger.getLogger(AmazonECSRegistryCredentialsProvider.class.getName());
 
     @NonNull
     @Override
@@ -61,19 +67,20 @@ public class AmazonECSRegistryCredentialsProvider extends CredentialsProvider {
 
         List<C> derived = Lists.newLinkedList();
 
-        final List<AmazonWebServicesCredentials> list = lookupCredentials(AmazonWebServicesCredentials.class, itemGroup,
-            ACL.SYSTEM, Collections.EMPTY_LIST);
+        final List<AmazonWebServicesCredentials> list = lookupCredentials(AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM , Collections.EMPTY_LIST);
 
         for (AmazonWebServicesCredentials credentials : list) {
-            derived.add((C) new AmazonECSRegistryCredential(
-                credentials.getScope(),
-                credentials.getId()));
+            LOGGER.log(Level.FINE, "Resolving Amazon Web Services credentials of scope {0} with id {1} , itemgroup {2}",
+                    new Object[]{credentials.getScope(), credentials.getId(),itemGroup});
+            derived.add((C) new AmazonECSRegistryCredential( credentials.getScope(),
+                        credentials.getId(),credentials.getDescription(),itemGroup));
 
             for (Regions region : Regions.values()) {
-                derived.add((C) new AmazonECSRegistryCredential(
-                    credentials.getScope(),
-                    credentials.getId(),
-                    region));
+                LOGGER.log(Level.FINE, "Resolving Amazon Web Services credentials of scope {0} with id {1} and region {2}",
+                        new Object[]{credentials.getScope(), credentials.getId(),region});
+                derived.add((C) new AmazonECSRegistryCredential( credentials.getScope(),
+                            credentials.getId(),
+                            region, credentials.getDescription(),itemGroup));
             }
         }
 
