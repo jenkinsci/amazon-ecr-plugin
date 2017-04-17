@@ -69,8 +69,8 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, @Nonnull String credentialsId,
                                        Regions region, String description, ItemGroup itemGroup) {
-        super(scope, "ecr:" + region.getName() + ":" + credentialsId, "Amazon ECR Registry : "
-                + (StringUtils.isNotBlank(description) ? description + " - " : "" ) + region);
+        super(scope, "ecr:" + region.getName() + ":" + credentialsId, "Amazon ECR Registry:"
+                + (StringUtils.isNotBlank(description) ? description : credentialsId) + "-" + region);
         this.credentialsId = credentialsId;
         this.region = region;
         this.itemGroup = itemGroup;
@@ -86,6 +86,11 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         LOG.log(Level.FINE,"Looking for Amazon web credentials ID: {0} Region: {1}", new Object[]{this.credentialsId,this.region});
         List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
             AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM, Collections.EMPTY_LIST);
+
+        if(LOG.isLoggable(Level.FINEST)){
+            String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
+            LOG.log(Level.FINEST,"Trace : {0}", fullStackTrace);
+        }
 
         if (credentials.isEmpty()) {
             LOG.fine("ID Not found");
@@ -104,9 +109,9 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     @Nonnull
     public String getDescription() {
-        final AmazonWebServicesCredentials credentials = getCredentials();
-        return credentials == null ? "No Valid Credential" : CredentialsNameProvider.name(credentials)
-                + " " + (StringUtils.isNotBlank(credentials.getDescription()) ? region : super.getDescription());
+        String description =  super.getDescription();
+        LOG.finest(description);
+        return description;
     }
 
     @Nonnull
@@ -114,7 +119,11 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     public Secret getPassword() {
         final AmazonWebServicesCredentials credentials = getCredentials();
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
-        LOG.log(Level.FINE,"Get Password for {0} region : {1}", new Object[]{credentials.getCredentials() , region});
+        LOG.log(Level.FINE,"Get Password for {0} region : {1}", new Object[]{credentials.getDisplayName(), region});
+        if(LOG.isLoggable(Level.ALL)){
+            String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
+            LOG.log(Level.ALL,"Trace : {0}", fullStackTrace);
+        }
         com.amazonaws.AmazonECRClientFactory factory = new com.amazonaws.AmazonECRClientFactory();
         final AmazonECRClient client = factory.getAmazonECRClientWithProxy(credentials.getCredentials());
         client.setRegion(Region.getRegion(region));
