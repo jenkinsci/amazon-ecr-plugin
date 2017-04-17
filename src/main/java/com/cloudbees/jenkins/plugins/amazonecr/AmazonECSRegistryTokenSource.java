@@ -25,12 +25,13 @@
 
 package com.cloudbees.jenkins.plugins.amazonecr;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.util.Secret;
 import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.docker.commons.credentials.DockerRegistryToken;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
@@ -42,9 +43,9 @@ public class AmazonECSRegistryTokenSource extends AuthenticationTokenSource<Dock
         super(DockerRegistryToken.class, AmazonECSRegistryCredential.class);
     }
 
-    @NonNull
+    @Nonnull
     @Override
-    public DockerRegistryToken convert(@NonNull AmazonECSRegistryCredential credential) throws AuthenticationTokenException {
+    public DockerRegistryToken convert(@Nonnull AmazonECSRegistryCredential credential) throws AuthenticationTokenException {
         return new DockerRegistryToken(credential.getEmail(), Secret.toString(credential.getPassword()));
     }
 }
