@@ -30,7 +30,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.9</version>
+    <version>2.21</version>
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -43,8 +43,8 @@
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Amazon+ECR</url>
 
   <properties>
-    <jenkins.version>1.609</jenkins.version>
-    <java.level>6</java.level>
+    <jenkins.version>1.651.3</jenkins.version>
+    <java.level>7</java.level>
     <powermock.version>1.6.1</powermock.version>
   </properties>
 
@@ -104,22 +104,22 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials</artifactId>
-      <version>1.24</version>
+      <version>2.1.11</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>aws-java-sdk</artifactId>
-      <version>1.10.45</version>
+      <version>1.11.68.1</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>aws-credentials</artifactId>
-      <version>1.10</version>
+      <version>1.19</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>docker-commons</artifactId>
-      <version>1.2</version>
+      <version>1.6</version>
     </dependency>
   </dependencies>
 
