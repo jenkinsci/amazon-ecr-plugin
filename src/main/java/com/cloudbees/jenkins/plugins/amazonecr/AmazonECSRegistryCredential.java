@@ -25,7 +25,6 @@
 
 package com.cloudbees.jenkins.plugins.amazonecr;
 
-import com.amazonaws.ClientConfiguration;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ecr.AmazonECRClient;
@@ -38,14 +37,13 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.ItemGroup;
 import hudson.security.ACL;
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,6 +52,7 @@ import java.util.List;
  * when a credential for Amazon ECS Registry end point is needed.
  */
 public class AmazonECSRegistryCredential extends BaseStandardCredentials implements StandardUsernamePasswordCredentials {
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(AmazonECSRegistryCredential.class.getName());
 
     private final String credentialsId;
 
@@ -61,12 +60,12 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
 
     private final ItemGroup itemGroup;
 
-    public AmazonECSRegistryCredential(CredentialsScope scope, @NonNull String credentialsId,
+    public AmazonECSRegistryCredential(CredentialsScope scope, @Nonnull String credentialsId,
                                        String description, ItemGroup itemGroup) {
-        this(scope, credentialsId, Regions.US_EAST_1, description, itemGroup);
+        this(scope, credentialsId, Regions.US_EAST_1, description, (ItemGroup<?>)itemGroup);
     }
 
-    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, @NonNull String credentialsId,
+    public AmazonECSRegistryCredential(@CheckForNull CredentialsScope scope, @Nonnull String credentialsId,
                                        Regions region, String description, ItemGroup itemGroup) {
         super(scope, "ecr:" + region.getName() + ":" + credentialsId, "Amazon ECR Registry : "
                 + (StringUtils.isNotBlank(description) ? description + " - " : "" ) + region);
@@ -76,6 +75,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     }
 
 
+    @Nonnull
     public String getCredentialsId() {
         return credentialsId;
     }
@@ -96,19 +96,21 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         return  null;
     }
 
+    @Nonnull
     public String getDescription() {
         final AmazonWebServicesCredentials credentials = getCredentials();
         return credentials == null ? "No Valid Credential" : CredentialsNameProvider.name(credentials)
                 + " " + (StringUtils.isNotBlank(credentials.getDescription()) ? region : super.getDescription());
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Secret getPassword() {
         final AmazonWebServicesCredentials credentials = getCredentials();
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
-
-        final AmazonECRClient client = new AmazonECRClient(credentials.getCredentials(), new ClientConfiguration());
+        LOG.info("getPassword for " + credentials.getCredentials() + " region : " + region);
+        com.amazonaws.AmazonECRClientFactory factory = new com.amazonaws.AmazonECRClientFactory();
+        final AmazonECRClient client = factory.getAmazonECRClientWithProxy(credentials.getCredentials());
         client.setRegion(Region.getRegion(region));
 
         final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(new GetAuthorizationTokenRequest());
@@ -119,12 +121,13 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public String getUsername() {
         return "AWS";
     }
 
+    @Nonnull
     public String getEmail() {
         return "nobody@example.com";
     }
