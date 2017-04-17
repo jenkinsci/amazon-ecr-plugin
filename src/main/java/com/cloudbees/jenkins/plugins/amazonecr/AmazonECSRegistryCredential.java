@@ -46,13 +46,15 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This new kind of credential provides an embedded {@link com.amazonaws.auth.AWSCredentials}
  * when a credential for Amazon ECS Registry end point is needed.
  */
 public class AmazonECSRegistryCredential extends BaseStandardCredentials implements StandardUsernamePasswordCredentials {
-    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(AmazonECSRegistryCredential.class.getName());
+    private static final Logger LOG = Logger.getLogger(AmazonECSRegistryCredential.class.getName());
 
     private final String credentialsId;
 
@@ -81,18 +83,22 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     }
 
     public @CheckForNull AmazonWebServicesCredentials getCredentials() {
+        LOG.fine("Looking for Amazon web credentials");
         List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
             AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM, Collections.EMPTY_LIST);
 
         if (credentials.isEmpty()) {
+            LOG.fine("ID Not found");
             return null;
         }
 
         for (AmazonWebServicesCredentials awsCredentials : credentials) {
             if (awsCredentials.getId().equals(this.credentialsId)) {
+                LOG.log(Level.FINE,"ID found {0}" , this.credentialsId);
                 return awsCredentials;
             }
         }
+        LOG.fine("ID Not found");
         return  null;
     }
 
@@ -108,7 +114,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     public Secret getPassword() {
         final AmazonWebServicesCredentials credentials = getCredentials();
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
-        LOG.info("getPassword for " + credentials.getCredentials() + " region : " + region);
+        LOG.log(Level.FINE,"Password for {0} region : {1}", new Object[]{credentials.getCredentials() , region});
         com.amazonaws.AmazonECRClientFactory factory = new com.amazonaws.AmazonECRClientFactory();
         final AmazonECRClient client = factory.getAmazonECRClientWithProxy(credentials.getCredentials());
         client.setRegion(Region.getRegion(region));
@@ -118,6 +124,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         if (authorizationData == null || authorizationData.isEmpty()) {
             throw new IllegalStateException("Failed to retreive authorization token for Amazon ECR");
         }
+        LOG.fine("Success");
         return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
     }
 
