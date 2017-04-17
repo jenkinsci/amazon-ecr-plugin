@@ -83,7 +83,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     }
 
     public @CheckForNull AmazonWebServicesCredentials getCredentials() {
-        LOG.fine("Looking for Amazon web credentials");
+        LOG.log(Level.FINE,"Looking for Amazon web credentials ID: {0} Region: {1}", new Object[]{this.credentialsId,this.region});
         List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
             AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM, Collections.EMPTY_LIST);
 
@@ -114,7 +114,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
     public Secret getPassword() {
         final AmazonWebServicesCredentials credentials = getCredentials();
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
-        LOG.log(Level.FINE,"Password for {0} region : {1}", new Object[]{credentials.getCredentials() , region});
+        LOG.log(Level.FINE,"Get Password for {0} region : {1}", new Object[]{credentials.getCredentials() , region});
         com.amazonaws.AmazonECRClientFactory factory = new com.amazonaws.AmazonECRClientFactory();
         final AmazonECRClient client = factory.getAmazonECRClientWithProxy(credentials.getCredentials());
         client.setRegion(Region.getRegion(region));
