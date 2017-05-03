@@ -43,7 +43,7 @@
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Amazon+ECR</url>
 
   <properties>
-    <jenkins.version>1.651.3</jenkins.version>
+    <jenkins.version>1.642.1</jenkins.version>
     <java.level>7</java.level>
     <powermock.version>1.6.1</powermock.version>
   </properties>
