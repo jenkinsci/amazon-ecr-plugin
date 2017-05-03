@@ -25,12 +25,15 @@
 
 package com.cloudbees.jenkins.plugins.amazonecr;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.util.Secret;
 import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.docker.commons.credentials.DockerRegistryToken;
+
+import javax.annotation.Nonnull;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
@@ -38,13 +41,17 @@ import org.jenkinsci.plugins.docker.commons.credentials.DockerRegistryToken;
 @Extension
 public class AmazonECSRegistryTokenSource extends AuthenticationTokenSource<DockerRegistryToken, AmazonECSRegistryCredential> {
 
+    private static final Logger LOG = Logger.getLogger(AmazonECSRegistryTokenSource.class.getName());
+
+
     public AmazonECSRegistryTokenSource() {
         super(DockerRegistryToken.class, AmazonECSRegistryCredential.class);
     }
 
-    @NonNull
+    @Nonnull
     @Override
-    public DockerRegistryToken convert(@NonNull AmazonECSRegistryCredential credential) throws AuthenticationTokenException {
+    public DockerRegistryToken convert(@Nonnull AmazonECSRegistryCredential credential) throws AuthenticationTokenException {
+        LOG.log(Level.FINE,"Converting credential to Docker registry token : {0}",credential.getCredentialsId());
         return new DockerRegistryToken(credential.getEmail(), Secret.toString(credential.getPassword()));
     }
 }
