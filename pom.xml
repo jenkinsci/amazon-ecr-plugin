@@ -35,7 +35,7 @@
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
   <artifactId>amazon-ecr</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.6-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Amazon ECR plugin</name>
