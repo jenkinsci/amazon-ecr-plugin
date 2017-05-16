@@ -35,7 +35,7 @@
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
   <artifactId>amazon-ecr</artifactId>
-  <version>1.6</version>
+  <version>1.7-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Amazon ECR plugin</name>
@@ -65,7 +65,7 @@
     <connection>scm:git:git://github.com/jenkinsci/amazon-ecr-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/amazon-ecr-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/amazon-ecr-plugin</url>
-    <tag>amazon-ecr-1.6</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
