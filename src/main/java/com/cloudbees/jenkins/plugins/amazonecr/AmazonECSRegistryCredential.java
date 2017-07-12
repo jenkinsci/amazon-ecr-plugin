@@ -128,12 +128,17 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials impleme
         final AmazonECRClient client = factory.getAmazonECRClientWithProxy(credentials.getCredentials());
         client.setRegion(Region.getRegion(region));
 
-        final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(new GetAuthorizationTokenRequest());
+        GetAuthorizationTokenRequest request = new GetAuthorizationTokenRequest();
+        final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(request);
         final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
         if (authorizationData == null || authorizationData.isEmpty()) {
-            throw new IllegalStateException("Failed to retreive authorization token for Amazon ECR");
+            throw new IllegalStateException("Failed to retrieve authorization token for Amazon ECR");
         }
-        LOG.fine("Success");
+        LOG.fine("Success ");
+        if(LOG.isLoggable(Level.ALL)){
+            LOG.finest("Auth token: " + authorizationToken.toString());
+            LOG.finest("Request: " + request.toString());
+        }
         return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
     }
 
