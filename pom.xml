@@ -40,7 +40,7 @@
 
   <name>Amazon ECR plugin</name>
   <description>Integrate Jenkins with Amazon EC2 Container Registry (ECR)</description>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Amazon+ECR</url>
+  <url>https://plugins.jenkins.io/amazon-ecr</url>
 
   <properties>
     <jenkins.version>2.32.1</jenkins.version>
