@@ -52,12 +52,16 @@
     <developer>
       <id>ndeloof</id>
       <name>Nicolas De Loof</name>
-      <email>nicolas.deloof@gmail.com</email>
+      <roles>
+        <role>Maintainer (retired)</role>
+      </roles>
     </developer>
     <developer>
       <id>ifernandezcalvo</id>
       <name>Ivan Fernandez Calvo</name>
-      <email>kuisathaverat@gmail.com</email>
+      <roles>
+        <role>Maintainer</role>
+      </roles>
     </developer>
   </developers>
 
