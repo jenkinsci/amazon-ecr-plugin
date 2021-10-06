@@ -24,13 +24,13 @@
   ~
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.21</version>
+    <version>4.28</version>
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -40,15 +40,23 @@
 
   <name>Amazon ECR plugin</name>
   <description>Integrate Jenkins with Amazon EC2 Container Registry (ECR)</description>
-  <url>https://plugins.jenkins.io/amazon-ecr</url>
-
-  <properties>
-    <jenkins.version>2.32.1</jenkins.version>
-    <java.level>7</java.level>
-    <powermock.version>1.6.1</powermock.version>
-  </properties>
+  <url>https://github.com/jenkinsci/amazon-ecr-plugin</url>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
 
   <developers>
+    <developer>
+      <id>TobiX</id>
+      <name>Tobias Gruetzmacher</name>
+      <email>tobias-git@23.gs</email>
+      <roles>
+        <role>Maintainer</role>
+      </roles>
+    </developer>
     <developer>
       <id>ndeloof</id>
       <name>Nicolas De Loof</name>
@@ -66,43 +74,17 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/amazon-ecr-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/amazon-ecr-plugin.git</developerConnection>
-    <url>https://github.com/jenkinsci/amazon-ecr-plugin</url>
+    <connection>scm:git:ssh://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/${gitHubRepo}.git</developerConnection>
+    <url>https://github.com/${gitHubRepo}</url>
     <tag>HEAD</tag>
   </scm>
 
-  <licenses>
-    <license>
-      <name>MIT License</name>
-      <url>http://opensource.org/licenses/MIT</url>
-    </license>
-  </licenses>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <configuration>
-          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>repo.jenkins-ci.org</id>
-      <url>https://repo.jenkins-ci.org/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
+  <properties>
+    <gitHubRepo>jenkinsci/amazon-ecr-plugin</gitHubRepo>
+    <jenkins.version>2.249.1</jenkins.version>
+    <java.level>8</java.level>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -113,7 +95,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>aws-java-sdk</artifactId>
-      <version>1.11.119</version>
+      <version>1.11.341</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -127,4 +109,16 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
