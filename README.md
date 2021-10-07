@@ -65,3 +65,18 @@ node {
 }
 ```
 
+## Development
+
+### Code Style
+
+This plugin tries to migrate to [Google Java Code Style], please try to adhere
+to that style whenever adding new files or making changes to existing files.
+The style is enforced using the [spotless] plugin, if the build fails because
+you were using the "wrong" style, you can fix it by running:
+
+    $ mvn spotless:apply
+
+to reformat Java code in the proper style.
+
+[Google Java Code Style]: https://google.github.io/styleguide/javaguide.html
+[spotless]: https://github.com/diffplug/spotless
