@@ -60,7 +60,7 @@
     <revision>1</revision>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/amazon-ecr-plugin</gitHubRepo>
-    <jenkins.version>2.249.1</jenkins.version>
+    <jenkins.version>2.332.4</jenkins.version>
   </properties>
 
   <dependencies>
