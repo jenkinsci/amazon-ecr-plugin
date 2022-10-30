@@ -33,52 +33,70 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.ItemGroup;
-import org.acegisecurity.Authentication;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.acegisecurity.Authentication;
 
 /**
- * This class automatically wraps existing {@link AmazonWebServicesCredentials} instances
- * into a username password credential type that is compatible with Docker
- * remote API client plugin.
+ * This class automatically wraps existing {@link AmazonWebServicesCredentials} instances into a
+ * username password credential type that is compatible with Docker remote API client plugin.
  */
 @Extension
 public class AmazonECSRegistryCredentialsProvider extends CredentialsProvider {
 
-    private static final Logger LOG = Logger.getLogger(AmazonECSRegistryCredentialsProvider.class.getName());
+  private static final Logger LOG =
+      Logger.getLogger(AmazonECSRegistryCredentialsProvider.class.getName());
 
-    @Nonnull
-    @Override
-    public <C extends Credentials> List<C> getCredentials(@Nonnull Class<C> type, @Nullable ItemGroup itemGroup, @Nullable Authentication authentication) {
+  @Nonnull
+  @Override
+  public <C extends Credentials> List<C> getCredentials(
+      @Nonnull Class<C> type,
+      @Nullable ItemGroup itemGroup,
+      @Nullable Authentication authentication) {
 
-        if (!type.isAssignableFrom(AmazonECSRegistryCredential.class)) {
-            return ImmutableList.of();
-        }
-
-        List<C> derived = Lists.newLinkedList();
-
-        final List<AmazonWebServicesCredentials> list = lookupCredentials(AmazonWebServicesCredentials.class, itemGroup, authentication , Collections.EMPTY_LIST);
-
-        for (AmazonWebServicesCredentials credentials : list) {
-            LOG.log(Level.FINE, "Resolving Amazon Web Services credentials of scope {0} with id {1} , itemgroup {2}",
-                    new Object[]{credentials.getScope(), credentials.getId(),itemGroup});
-            derived.add((C) new AmazonECSRegistryCredential( credentials.getScope(),
-                        credentials.getId(),credentials.getDescription(),itemGroup));
-
-            for (Regions region : Regions.values()) {
-                LOG.log(Level.FINE, "Resolving Amazon Web Services credentials of scope {0} with id {1} and region {2}",
-                        new Object[]{credentials.getScope(), credentials.getId(),region});
-                derived.add((C) new AmazonECSRegistryCredential( credentials.getScope(),
-                            credentials.getId(),
-                            region, credentials.getDescription(),itemGroup));
-            }
-        }
-
-        return derived;
+    if (!type.isAssignableFrom(AmazonECSRegistryCredential.class)) {
+      return ImmutableList.of();
     }
+
+    List<C> derived = Lists.newLinkedList();
+
+    final List<AmazonWebServicesCredentials> list =
+        lookupCredentials(
+            AmazonWebServicesCredentials.class, itemGroup, authentication, Collections.EMPTY_LIST);
+
+    for (AmazonWebServicesCredentials credentials : list) {
+      LOG.log(
+          Level.FINE,
+          "Resolving Amazon Web Services credentials of scope {0} with id {1} , itemgroup {2}",
+          new Object[] {credentials.getScope(), credentials.getId(), itemGroup});
+      derived.add(
+          (C)
+              new AmazonECSRegistryCredential(
+                  credentials.getScope(),
+                  credentials.getId(),
+                  credentials.getDescription(),
+                  itemGroup));
+
+      for (Regions region : Regions.values()) {
+        LOG.log(
+            Level.FINE,
+            "Resolving Amazon Web Services credentials of scope {0} with id {1} and region {2}",
+            new Object[] {credentials.getScope(), credentials.getId(), region});
+        derived.add(
+            (C)
+                new AmazonECSRegistryCredential(
+                    credentials.getScope(),
+                    credentials.getId(),
+                    region,
+                    credentials.getDescription(),
+                    itemGroup));
+      }
+    }
+
+    return derived;
+  }
 }
