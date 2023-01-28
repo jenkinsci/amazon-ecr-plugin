@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.48</version>
+    <version>4.54</version>
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -61,15 +61,15 @@
     <revision>1</revision>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/amazon-ecr-plugin</gitHubRepo>
-    <jenkins.version>2.332.4</jenkins.version>
+    <jenkins.version>2.361.4</jenkins.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.332.x</artifactId>
-        <version>1654.vcb_69d035fa_20</version>
+        <artifactId>bom-2.361.x</artifactId>
+        <version>1798.vc671fe94856f</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -121,11 +121,7 @@
             <endWithNewline />
             <importOrder />
             <removeUnusedImports />
-            <googleJavaFormat>
-              <!-- Last version that supports Java 8, the plugin does handle this internally
-              but it will give different versions based off of the JVM version, not good for CI -->
-              <version>1.7</version>
-            </googleJavaFormat>
+            <googleJavaFormat />
           </java>
           <pom>
             <sortPom>
