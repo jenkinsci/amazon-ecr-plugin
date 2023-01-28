@@ -33,21 +33,22 @@
         <role>Maintainer</role>
       </roles>
     </developer>
-    <developer>
-      <id>ndeloof</id>
+  </developers>
+
+  <contributors>
+    <contributor>
       <name>Nicolas De Loof</name>
       <roles>
         <role>Maintainer (retired)</role>
       </roles>
-    </developer>
-    <developer>
-      <id>ifernandezcalvo</id>
+    </contributor>
+    <contributor>
       <name>Ivan Fernandez Calvo</name>
       <roles>
         <role>Maintainer (retired)</role>
       </roles>
-    </developer>
-  </developers>
+    </contributor>
+  </contributors>
 
   <scm>
     <connection>scm:git:ssh://github.com/${gitHubRepo}.git</connection>
