@@ -34,7 +34,6 @@ import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 import org.jenkinsci.plugins.docker.commons.credentials.DockerRegistryToken;
 
-/** @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a> */
 @Extension
 public class AmazonECSRegistryTokenSource
     extends AuthenticationTokenSource<DockerRegistryToken, AmazonECSRegistryCredential> {

@@ -1,5 +1,12 @@
 # Amazon ECR Plugin
 
+[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/amazon-ecr.svg)](https://plugins.jenkins.io/amazon-ecr)
+[![GitHub release](https://img.shields.io/github/release/jenkinsci/amazon-ecr-plugin.svg?label=release)](https://github.com/jenkinsci/amazon-ecr-plugin/releases/latest)
+[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/amazon-ecr.svg?color=blue)](https://plugins.jenkins.io/amazon-ecr)
+[![Build Status](https://ci.jenkins.io/buildStatus/icon?job=Plugins%2Famazon-ecr-plugin%2Fmain)](https://ci.jenkins.io/job/Plugins/job/amazon-ecr-plugin/job/main/)
+[![GitHub license](https://img.shields.io/github/license/jenkinsci/amazon-ecr-plugin.svg)](https://github.com/jenkinsci/amazon-ecr-plugin/blob/main/LICENSE.txt)
+[![Maintenance](https://img.shields.io/maintenance/yes/2023.svg)]()
+
 This plugin offers integration with [Amazon Container Registry
 (ECR)](https://aws.amazon.com/ecr/) as a [DockerRegistryToken] source to convert
 Amazon Credentials into a Docker CLI Authentication Token.
