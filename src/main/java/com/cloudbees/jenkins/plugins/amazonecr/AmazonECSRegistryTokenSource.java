@@ -36,23 +36,19 @@ import org.jenkinsci.plugins.docker.commons.credentials.DockerRegistryToken;
 
 @Extension
 public class AmazonECSRegistryTokenSource
-    extends AuthenticationTokenSource<DockerRegistryToken, AmazonECSRegistryCredential> {
+        extends AuthenticationTokenSource<DockerRegistryToken, AmazonECSRegistryCredential> {
 
-  private static final Logger LOG = Logger.getLogger(AmazonECSRegistryTokenSource.class.getName());
+    private static final Logger LOG = Logger.getLogger(AmazonECSRegistryTokenSource.class.getName());
 
-  public AmazonECSRegistryTokenSource() {
-    super(DockerRegistryToken.class, AmazonECSRegistryCredential.class);
-  }
+    public AmazonECSRegistryTokenSource() {
+        super(DockerRegistryToken.class, AmazonECSRegistryCredential.class);
+    }
 
-  @Nonnull
-  @Override
-  public DockerRegistryToken convert(@Nonnull AmazonECSRegistryCredential credential)
-      throws AuthenticationTokenException {
-    LOG.log(
-        Level.FINE,
-        "Converting credential to Docker registry token : {0}",
-        credential.getCredentialsId());
-    return new DockerRegistryToken(
-        credential.getEmail(), Secret.toString(credential.getPassword()));
-  }
+    @Nonnull
+    @Override
+    public DockerRegistryToken convert(@Nonnull AmazonECSRegistryCredential credential)
+            throws AuthenticationTokenException {
+        LOG.log(Level.FINE, "Converting credential to Docker registry token : {0}", credential.getCredentialsId());
+        return new DockerRegistryToken(credential.getEmail(), Secret.toString(credential.getPassword()));
+    }
 }

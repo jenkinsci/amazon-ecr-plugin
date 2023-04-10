@@ -56,135 +56,125 @@ import org.apache.commons.lang.StringUtils;
  * credential for Amazon ECS Registry end point is needed.
  */
 public class AmazonECSRegistryCredential extends BaseStandardCredentials
-    implements StandardUsernamePasswordCredentials {
-  private static final Logger LOG = Logger.getLogger(AmazonECSRegistryCredential.class.getName());
+        implements StandardUsernamePasswordCredentials {
+    private static final Logger LOG = Logger.getLogger(AmazonECSRegistryCredential.class.getName());
 
-  private final String credentialsId;
+    private final String credentialsId;
 
-  private final Regions region;
+    private final Regions region;
 
-  private final ItemGroup itemGroup;
+    private final ItemGroup itemGroup;
 
-  public AmazonECSRegistryCredential(
-      CredentialsScope scope,
-      @Nonnull String credentialsId,
-      String description,
-      ItemGroup itemGroup) {
-    this(scope, credentialsId, Regions.US_EAST_1, description, (ItemGroup<?>) itemGroup);
-  }
-
-  public AmazonECSRegistryCredential(
-      @CheckForNull CredentialsScope scope,
-      @Nonnull String credentialsId,
-      Regions region,
-      String description,
-      ItemGroup itemGroup) {
-    super(
-        scope,
-        "ecr:" + region.getName() + ":" + credentialsId,
-        "Amazon ECR Registry:"
-            + (StringUtils.isNotBlank(description) ? description : credentialsId)
-            + "-"
-            + region);
-    this.credentialsId = credentialsId;
-    this.region = region;
-    this.itemGroup = itemGroup;
-  }
-
-  @Nonnull
-  public String getCredentialsId() {
-    return credentialsId;
-  }
-
-  public @CheckForNull AmazonWebServicesCredentials getCredentials() {
-    LOG.log(
-        Level.FINE,
-        "Looking for Amazon web credentials ID: {0} Region: {1}",
-        new Object[] {this.credentialsId, this.region});
-    List<AmazonWebServicesCredentials> credentials =
-        CredentialsProvider.lookupCredentials(
-            AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM, Collections.EMPTY_LIST);
-
-    if (LOG.isLoggable(Level.FINEST)) {
-      String fullStackTrace =
-          org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
-      LOG.log(Level.FINEST, "Trace: {0}", fullStackTrace);
+    public AmazonECSRegistryCredential(
+            CredentialsScope scope, @Nonnull String credentialsId, String description, ItemGroup itemGroup) {
+        this(scope, credentialsId, Regions.US_EAST_1, description, (ItemGroup<?>) itemGroup);
     }
 
-    if (credentials.isEmpty()) {
-      LOG.fine("ID not found");
-      return null;
+    public AmazonECSRegistryCredential(
+            @CheckForNull CredentialsScope scope,
+            @Nonnull String credentialsId,
+            Regions region,
+            String description,
+            ItemGroup itemGroup) {
+        super(
+                scope,
+                "ecr:" + region.getName() + ":" + credentialsId,
+                "Amazon ECR Registry:"
+                        + (StringUtils.isNotBlank(description) ? description : credentialsId)
+                        + "-"
+                        + region);
+        this.credentialsId = credentialsId;
+        this.region = region;
+        this.itemGroup = itemGroup;
     }
 
-    for (AmazonWebServicesCredentials awsCredentials : credentials) {
-      if (awsCredentials.getId().equals(this.credentialsId)) {
-        LOG.log(Level.FINE, "ID found {0}", this.credentialsId);
-        return awsCredentials;
-      }
-    }
-    LOG.fine("ID not found");
-    return null;
-  }
-
-  @Nonnull
-  public String getDescription() {
-    String description = super.getDescription();
-    LOG.finest(description);
-    return description;
-  }
-
-  @Nonnull
-  @Override
-  public Secret getPassword() {
-    final AmazonWebServicesCredentials credentials = getCredentials();
-    if (credentials == null) throw new IllegalStateException("Invalid credentials");
-    LOG.log(
-        Level.FINE,
-        "Get password for {0} region : {1}",
-        new Object[] {credentials.getDisplayName(), region});
-    if (LOG.isLoggable(Level.ALL)) {
-      String fullStackTrace =
-          org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
-      LOG.log(Level.ALL, "Trace: {0}", fullStackTrace);
-    }
-    ClientConfiguration conf = new ClientConfiguration();
-    Jenkins j = Jenkins.get();
-    if (j.proxy != null) {
-      conf.setProxyHost(j.proxy.name);
-      conf.setProxyPort(j.proxy.port);
-      conf.setProxyUsername(j.proxy.getUserName());
-      Secret password = j.proxy.getSecretPassword();
-      if (password != null) conf.setProxyPassword(password.getPlainText());
+    @Nonnull
+    public String getCredentialsId() {
+        return credentialsId;
     }
 
-    AmazonECRClientBuilder builder = AmazonECRClientBuilder.standard();
-    builder.setCredentials(credentials);
-    builder.setClientConfiguration(conf);
-    builder.setRegion(Region.getRegion(region).getName());
-    final AmazonECR client = builder.build();
+    public @CheckForNull AmazonWebServicesCredentials getCredentials() {
+        LOG.log(Level.FINE, "Looking for Amazon web credentials ID: {0} Region: {1}", new Object[] {
+            this.credentialsId, this.region
+        });
+        List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
+                AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM, Collections.EMPTY_LIST);
 
-    GetAuthorizationTokenRequest request = new GetAuthorizationTokenRequest();
-    final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(request);
-    final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
-    if (authorizationData == null || authorizationData.isEmpty()) {
-      throw new IllegalStateException("Failed to retrieve authorization token for Amazon ECR");
+        if (LOG.isLoggable(Level.FINEST)) {
+            String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
+            LOG.log(Level.FINEST, "Trace: {0}", fullStackTrace);
+        }
+
+        if (credentials.isEmpty()) {
+            LOG.fine("ID not found");
+            return null;
+        }
+
+        for (AmazonWebServicesCredentials awsCredentials : credentials) {
+            if (awsCredentials.getId().equals(this.credentialsId)) {
+                LOG.log(Level.FINE, "ID found {0}", this.credentialsId);
+                return awsCredentials;
+            }
+        }
+        LOG.fine("ID not found");
+        return null;
     }
-    LOG.fine("Success");
-    if (LOG.isLoggable(Level.ALL)) {
-      LOG.finest("Auth token: " + authorizationToken);
-      LOG.finest("Request: " + request);
+
+    @Nonnull
+    public String getDescription() {
+        String description = super.getDescription();
+        LOG.finest(description);
+        return description;
     }
-    return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
-  }
 
-  @Nonnull
-  @Override
-  public String getUsername() {
-    return "AWS";
-  }
+    @Nonnull
+    @Override
+    public Secret getPassword() {
+        final AmazonWebServicesCredentials credentials = getCredentials();
+        if (credentials == null) throw new IllegalStateException("Invalid credentials");
+        LOG.log(Level.FINE, "Get password for {0} region : {1}", new Object[] {credentials.getDisplayName(), region});
+        if (LOG.isLoggable(Level.ALL)) {
+            String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
+            LOG.log(Level.ALL, "Trace: {0}", fullStackTrace);
+        }
+        ClientConfiguration conf = new ClientConfiguration();
+        Jenkins j = Jenkins.get();
+        if (j.proxy != null) {
+            conf.setProxyHost(j.proxy.name);
+            conf.setProxyPort(j.proxy.port);
+            conf.setProxyUsername(j.proxy.getUserName());
+            Secret password = j.proxy.getSecretPassword();
+            if (password != null) conf.setProxyPassword(password.getPlainText());
+        }
 
-  @Nonnull
-  public String getEmail() {
-    return "nobody@example.com";
-  }
+        AmazonECRClientBuilder builder = AmazonECRClientBuilder.standard();
+        builder.setCredentials(credentials);
+        builder.setClientConfiguration(conf);
+        builder.setRegion(Region.getRegion(region).getName());
+        final AmazonECR client = builder.build();
+
+        GetAuthorizationTokenRequest request = new GetAuthorizationTokenRequest();
+        final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(request);
+        final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
+        if (authorizationData == null || authorizationData.isEmpty()) {
+            throw new IllegalStateException("Failed to retrieve authorization token for Amazon ECR");
+        }
+        LOG.fine("Success");
+        if (LOG.isLoggable(Level.ALL)) {
+            LOG.finest("Auth token: " + authorizationToken);
+            LOG.finest("Request: " + request);
+        }
+        return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
+    }
+
+    @Nonnull
+    @Override
+    public String getUsername() {
+        return "AWS";
+    }
+
+    @Nonnull
+    public String getEmail() {
+        return "nobody@example.com";
+    }
 }
