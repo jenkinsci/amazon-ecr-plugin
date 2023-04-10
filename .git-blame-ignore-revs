@@ -1,2 +1,4 @@
 # Spotless reformat: https://github.com/jenkinsci/amazon-ecr-plugin/pull/108
 3808041a014663a1d830dd982428c19025c10e0a
+# Reformat to upstream spotless config
+95904a4e7ced02c2856a1d91b49a7cc0a540a780
