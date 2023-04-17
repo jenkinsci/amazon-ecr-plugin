@@ -93,7 +93,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.aws-java-sdk</groupId>
       <artifactId>aws-java-sdk-ecr</artifactId>
-      <version>1.12.287-357.vf82d85a_6eefd</version>
+      <version>1.12.447-382.vda_68e2007233</version>
     </dependency>
   </dependencies>
 
