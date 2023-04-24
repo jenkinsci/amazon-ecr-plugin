@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.59</version>
+    <version>4.61</version>
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -62,6 +62,7 @@
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/amazon-ecr-plugin</gitHubRepo>
     <jenkins.version>2.361.4</jenkins.version>
+    <spotless.check.skip>false</spotless.check.skip>
   </properties>
 
   <dependencyManagement>
