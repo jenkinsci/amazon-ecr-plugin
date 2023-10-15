@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.61</version>
+    <version>4.74</version>
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -51,8 +51,8 @@
   </contributors>
 
   <scm>
-    <connection>scm:git:ssh://github.com/${gitHubRepo}.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/${gitHubRepo}.git</developerConnection>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <tag>${scmTag}</tag>
     <url>https://github.com/${gitHubRepo}</url>
   </scm>
@@ -70,7 +70,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-2.361.x</artifactId>
-        <version>1836.vfe602c266c05</version>
+        <version>2102.v854b_fec19c92</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
