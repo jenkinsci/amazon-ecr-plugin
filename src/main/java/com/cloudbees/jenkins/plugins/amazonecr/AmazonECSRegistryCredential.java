@@ -39,15 +39,14 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.ItemGroup;
 import hudson.security.ACL;
 import hudson.util.Secret;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 
@@ -66,13 +65,13 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
     private final ItemGroup itemGroup;
 
     public AmazonECSRegistryCredential(
-            CredentialsScope scope, @Nonnull String credentialsId, String description, ItemGroup itemGroup) {
-        this(scope, credentialsId, Regions.US_EAST_1, description, (ItemGroup<?>) itemGroup);
+            CredentialsScope scope, @NonNull String credentialsId, String description, ItemGroup itemGroup) {
+        this(scope, credentialsId, Regions.US_EAST_1, description, itemGroup);
     }
 
     public AmazonECSRegistryCredential(
             @CheckForNull CredentialsScope scope,
-            @Nonnull String credentialsId,
+            @NonNull String credentialsId,
             Regions region,
             String description,
             ItemGroup itemGroup) {
@@ -88,7 +87,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
         this.itemGroup = itemGroup;
     }
 
-    @Nonnull
+    @NonNull
     public String getCredentialsId() {
         return credentialsId;
     }
@@ -97,8 +96,8 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
         LOG.log(Level.FINE, "Looking for Amazon web credentials ID: {0} Region: {1}", new Object[] {
             this.credentialsId, this.region
         });
-        List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentials(
-                AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM, Collections.EMPTY_LIST);
+        List<AmazonWebServicesCredentials> credentials = CredentialsProvider.lookupCredentialsInItemGroup(
+                AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM2);
 
         if (LOG.isLoggable(Level.FINEST)) {
             String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
@@ -120,14 +119,15 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
         return null;
     }
 
-    @Nonnull
+    @NonNull
+    @Override
     public String getDescription() {
         String description = super.getDescription();
         LOG.finest(description);
         return description;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public Secret getPassword() {
         final AmazonWebServicesCredentials credentials = getCredentials();
@@ -167,13 +167,13 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
         return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getUsername() {
         return "AWS";
     }
 
-    @Nonnull
+    @NonNull
     public String getEmail() {
         return "nobody@example.com";
     }

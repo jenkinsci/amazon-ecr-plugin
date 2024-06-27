@@ -29,17 +29,17 @@ import com.amazonaws.regions.Regions;
 import com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentials;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.Extension;
 import hudson.model.ItemGroup;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.acegisecurity.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * This class automatically wraps existing {@link AmazonWebServicesCredentials} instances into a
@@ -50,19 +50,22 @@ public class AmazonECSRegistryCredentialsProvider extends CredentialsProvider {
 
     private static final Logger LOG = Logger.getLogger(AmazonECSRegistryCredentialsProvider.class.getName());
 
-    @Nonnull
+    @NonNull
     @Override
-    public <C extends Credentials> List<C> getCredentials(
-            @Nonnull Class<C> type, @Nullable ItemGroup itemGroup, @Nullable Authentication authentication) {
+    public <C extends Credentials> List<C> getCredentialsInItemGroup(
+            @NonNull Class<C> type,
+            @Nullable ItemGroup itemGroup,
+            @Nullable Authentication authentication,
+            @NonNull List<DomainRequirement> domainRequirements) {
 
         if (!type.isAssignableFrom(AmazonECSRegistryCredential.class)) {
-            return ImmutableList.of();
+            return Collections.emptyList();
         }
 
-        List<C> derived = Lists.newLinkedList();
+        List<C> derived = new LinkedList<>();
 
-        final List<AmazonWebServicesCredentials> list = lookupCredentials(
-                AmazonWebServicesCredentials.class, itemGroup, authentication, Collections.EMPTY_LIST);
+        final List<AmazonWebServicesCredentials> list = lookupCredentialsInItemGroup(
+                AmazonWebServicesCredentials.class, itemGroup, authentication, domainRequirements);
 
         for (AmazonWebServicesCredentials credentials : list) {
             LOG.log(
