@@ -18,8 +18,8 @@ Amazon Credentials into a Docker CLI Authentication Token.
 Amazon ECR plugin implements a Docker Token producer to convert Amazon
 credentials to Jenkins’ API used by (mostly) all Docker-related plugins.
 
-Thank's to this producer, you can select your existing registered Amazon
-credentials for various Docker operations in Jenkins, for sample using the
+Thanks to this producer, you can select your existing registered Amazon
+credentials for various Docker operations in Jenkins, for example using the
 Docker Build and Publish plugin:
 
 ![](.github/build-and-publish.png)
@@ -73,6 +73,23 @@ node {
 ```
 
 ## Development
+
+### Testing
+
+Unfortunately, testing against AWS isn't very straightforward, since you always
+need an AWS account with correct setup, which might incur some costs. Current
+tests try to make this as easy as possible. You need a user with read
+permission to ECR (AWS IAM policy `AmazonEC2ContainerRegistryReadOnly` should
+suffice) and an (empty) container registry. The test expect these details in
+the following environment variables:
+
+```shell
+export AWS_ACCESS_KEY_ID=<your-key-id-here>
+export AWS_SECRET_ACCESS_KEY=<your-secret-access-key-here>
+export AWS_REGISTRY_HOST=<some-number>.dkr.ecr.us-east-1.amazonaws.com
+```
+
+When those are set correctly, `mvn test` should run those tests successfully.
 
 ### Code Style
 
