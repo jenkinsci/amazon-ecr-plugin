@@ -25,7 +25,6 @@
 
 package com.cloudbees.jenkins.plugins.amazonecr;
 
-import com.amazonaws.regions.Regions;
 import com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentials;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -40,6 +39,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.security.core.Authentication;
+import software.amazon.awssdk.regions.Region;
 
 /**
  * This class automatically wraps existing {@link AmazonWebServicesCredentials} instances into a
@@ -75,7 +75,7 @@ public class AmazonECSRegistryCredentialsProvider extends CredentialsProvider {
             derived.add((C) new AmazonECSRegistryCredential(
                     credentials.getScope(), credentials.getId(), credentials.getDescription(), itemGroup));
 
-            for (Regions region : Regions.values()) {
+            for (Region region : Region.regions()) {
                 LOG.log(
                         Level.FINE,
                         "Resolving Amazon Web Services credentials of scope {0} with id {1} and region {2}",
