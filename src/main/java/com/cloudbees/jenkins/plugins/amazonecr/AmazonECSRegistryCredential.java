@@ -26,14 +26,7 @@
 
 package com.cloudbees.jenkins.plugins.amazonecr;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.ecr.AmazonECR;
-import com.amazonaws.services.ecr.AmazonECRClientBuilder;
-import com.amazonaws.services.ecr.model.AuthorizationData;
-import com.amazonaws.services.ecr.model.GetAuthorizationTokenRequest;
-import com.amazonaws.services.ecr.model.GetAuthorizationTokenResult;
 import com.cloudbees.jenkins.plugins.awscredentials.AmazonWebServicesCredentials;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsScope;
@@ -41,17 +34,25 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.ProxyConfiguration;
 import hudson.model.ItemGroup;
 import hudson.security.ACL;
 import hudson.util.Secret;
+import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ecr.EcrClient;
+import software.amazon.awssdk.services.ecr.model.AuthorizationData;
+import software.amazon.awssdk.services.ecr.model.GetAuthorizationTokenRequest;
+import software.amazon.awssdk.services.ecr.model.GetAuthorizationTokenResponse;
 
 /**
- * This new kind of credential provides an embedded {@link com.amazonaws.auth.AWSCredentials} when a
+ * This new kind of credential provides an embedded {@link software.amazon.awssdk.auth.credentials.AwsCredentials} when a
  * credential for Amazon ECS Registry end point is needed.
  */
 public class AmazonECSRegistryCredential extends BaseStandardCredentials
@@ -60,30 +61,40 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
 
     private final String credentialsId;
 
-    private final Regions region;
+    private final String region;
 
     private final ItemGroup itemGroup;
 
     public AmazonECSRegistryCredential(
             CredentialsScope scope, @NonNull String credentialsId, String description, ItemGroup itemGroup) {
-        this(scope, credentialsId, Regions.US_EAST_1, description, itemGroup);
+        this(scope, credentialsId, Region.US_EAST_1, description, itemGroup);
     }
 
+    @Deprecated
     public AmazonECSRegistryCredential(
             @CheckForNull CredentialsScope scope,
             @NonNull String credentialsId,
             Regions region,
             String description,
             ItemGroup itemGroup) {
+        this(scope, credentialsId, Region.of(region.getName()), description, itemGroup);
+    }
+
+    public AmazonECSRegistryCredential(
+            @CheckForNull CredentialsScope scope,
+            @NonNull String credentialsId,
+            Region region,
+            String description,
+            ItemGroup itemGroup) {
         super(
                 scope,
-                "ecr:" + region.getName() + ":" + credentialsId,
+                "ecr:" + region.id() + ":" + credentialsId,
                 "Amazon ECR Registry:"
                         + (StringUtils.isNotBlank(description) ? description : credentialsId)
                         + "-"
                         + region);
         this.credentialsId = credentialsId;
-        this.region = region;
+        this.region = region.id();
         this.itemGroup = itemGroup;
     }
 
@@ -137,34 +148,40 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
             String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
             LOG.log(Level.ALL, "Trace: {0}", fullStackTrace);
         }
-        ClientConfiguration conf = new ClientConfiguration();
-        Jenkins j = Jenkins.get();
-        if (j.proxy != null) {
-            conf.setProxyHost(j.proxy.name);
-            conf.setProxyPort(j.proxy.port);
-            conf.setProxyUsername(j.proxy.getUserName());
-            Secret password = j.proxy.getSecretPassword();
-            if (password != null) conf.setProxyPassword(password.getPlainText());
+        ApacheHttpClient.Builder builder = ApacheHttpClient.builder();
+        Jenkins instance = Jenkins.getInstanceOrNull();
+        ProxyConfiguration proxy = instance != null ? instance.proxy : null;
+        if (proxy != null) {
+            software.amazon.awssdk.http.apache.ProxyConfiguration.Builder proxyConfiguration =
+                    software.amazon.awssdk.http.apache.ProxyConfiguration.builder()
+                            .endpoint(URI.create(String.format("http://%s:%s", proxy.name, proxy.port)));
+            if (proxy.getUserName() != null) {
+                proxyConfiguration.username(proxy.getUserName());
+                proxyConfiguration.password(Secret.toString(proxy.getSecretPassword()));
+            }
+            builder.proxyConfiguration(proxyConfiguration.build());
         }
 
-        AmazonECRClientBuilder builder = AmazonECRClientBuilder.standard();
-        builder.setCredentials(credentials);
-        builder.setClientConfiguration(conf);
-        builder.setRegion(Region.getRegion(region).getName());
-        final AmazonECR client = builder.build();
+        try (EcrClient client = EcrClient.builder()
+                .httpClientBuilder(builder)
+                .region(Region.of(region))
+                .credentialsProvider(credentials)
+                .build()) {
 
-        GetAuthorizationTokenRequest request = new GetAuthorizationTokenRequest();
-        final GetAuthorizationTokenResult authorizationToken = client.getAuthorizationToken(request);
-        final List<AuthorizationData> authorizationData = authorizationToken.getAuthorizationData();
-        if (authorizationData == null || authorizationData.isEmpty()) {
-            throw new IllegalStateException("Failed to retrieve authorization token for Amazon ECR");
+            GetAuthorizationTokenRequest request =
+                    GetAuthorizationTokenRequest.builder().build();
+            final GetAuthorizationTokenResponse authorizationToken = client.getAuthorizationToken(request);
+            final List<AuthorizationData> authorizationData = authorizationToken.authorizationData();
+            if (authorizationData == null || authorizationData.isEmpty()) {
+                throw new IllegalStateException("Failed to retrieve authorization token for Amazon ECR");
+            }
+            LOG.fine("Success");
+            if (LOG.isLoggable(Level.ALL)) {
+                LOG.finest("Auth token: " + authorizationToken);
+                LOG.finest("Request: " + request);
+            }
+            return Secret.fromString(authorizationData.get(0).authorizationToken());
         }
-        LOG.fine("Success");
-        if (LOG.isLoggable(Level.ALL)) {
-            LOG.finest("Auth token: " + authorizationToken);
-            LOG.finest("Request: " + request);
-        }
-        return Secret.fromString(authorizationData.get(0).getAuthorizationToken());
     }
 
     @NonNull
