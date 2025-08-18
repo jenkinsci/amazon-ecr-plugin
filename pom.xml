@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.18</version>
+    <version>5.22</version>
   </parent>
 
   <groupId>com.cloudbees.jenkins.plugins</groupId>
@@ -65,6 +65,7 @@
     <jenkins.baseline>2.479</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     <spotless.check.skip>false</spotless.check.skip>
+    <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
   </properties>
 
   <dependencyManagement>
