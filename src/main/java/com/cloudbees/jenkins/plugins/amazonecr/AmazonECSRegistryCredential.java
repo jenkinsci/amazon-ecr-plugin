@@ -42,6 +42,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
@@ -158,6 +160,11 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
             if (proxy.getUserName() != null) {
                 proxyConfiguration.username(proxy.getUserName());
                 proxyConfiguration.password(Secret.toString(proxy.getSecretPassword()));
+            }
+            List<Pattern> patterns = proxy.getNoProxyHostPatterns();
+            if (patterns != null && !patterns.isEmpty()) {
+                proxyConfiguration.nonProxyHosts(
+                        patterns.stream().map(Pattern::pattern).collect(Collectors.toSet()));
             }
             builder.proxyConfiguration(proxyConfiguration.build());
         }
