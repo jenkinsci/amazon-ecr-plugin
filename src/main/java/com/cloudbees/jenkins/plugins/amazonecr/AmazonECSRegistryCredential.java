@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ecr.EcrClient;
@@ -113,7 +114,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
                 AmazonWebServicesCredentials.class, itemGroup, ACL.SYSTEM2);
 
         if (LOG.isLoggable(Level.FINEST)) {
-            String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
+            String fullStackTrace = ExceptionUtils.getStackTrace(new Throwable());
             LOG.log(Level.FINEST, "Trace: {0}", fullStackTrace);
         }
 
@@ -147,7 +148,7 @@ public class AmazonECSRegistryCredential extends BaseStandardCredentials
         if (credentials == null) throw new IllegalStateException("Invalid credentials");
         LOG.log(Level.FINE, "Get password for {0} region : {1}", new Object[] {credentials.getDisplayName(), region});
         if (LOG.isLoggable(Level.ALL)) {
-            String fullStackTrace = org.apache.commons.lang.exception.ExceptionUtils.getStackTrace(new Throwable());
+            String fullStackTrace = ExceptionUtils.getStackTrace(new Throwable());
             LOG.log(Level.ALL, "Trace: {0}", fullStackTrace);
         }
         ApacheHttpClient.Builder builder = ApacheHttpClient.builder();
